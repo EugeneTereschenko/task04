@@ -30,7 +30,7 @@ import java.util.UUID;
 @DependsOn(name = "Events", resourceType = ResourceType.DYNAMODB_TABLE)
 public class ApiHandler implements RequestHandler<RequestDTO, ResponseDTO> {
 
-	private static final String TABLE_NAME = "cmtr-24c2b942-Events";
+	private static final String TABLE_NAME = "cmtr-24c2b942-Events-test";
 	private final AmazonDynamoDB client = getAmazonDynamoDBClient();
 
 	public ResponseDTO handleRequest(RequestDTO request, Context context) {
