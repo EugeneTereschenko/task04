@@ -27,7 +27,7 @@ import java.util.UUID;
 		//aliasName = "${lambdas_alias_name}",
 		//logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-@DependsOn(name = "Events", resourceType = ResourceType.DYNAMODB_TABLE)
+@DependsOn(name = "Events-test", resourceType = ResourceType.DYNAMODB_TABLE)
 public class ApiHandler implements RequestHandler<RequestDTO, ResponseDTO> {
 
 	private static final String TABLE_NAME = "cmtr-24c2b942-Events-test";
@@ -35,8 +35,8 @@ public class ApiHandler implements RequestHandler<RequestDTO, ResponseDTO> {
 
 	public ResponseDTO handleRequest(RequestDTO request, Context context) {
 		LambdaLogger logger = context.getLogger();
-		logger.log(request.toString());
-		Event eventObject = createEventObject(request);
+		logger.log(request.toString());																																																																																																																																																													
+		Event eventObject = createEventObject(request);																																																																																																																																																																																																																																																																																																																																																																																			
 		PutItemRequest putItemRequest = getPutItemRequest(eventObject);
 		client.putItem(putItemRequest);
 		ResponseDTO responseDto = createResponseDTO(eventObject);
