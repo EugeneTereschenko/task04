@@ -21,9 +21,9 @@ import java.util.Map;
 		lambdaName = "audit_producer",
 		roleName = "audit_producer-role"
 )
-@DynamoDbTriggerEventSource(targetTable = "Configuration-test", batchSize = 10)
-@DependsOn(name = "Audit-test", resourceType = ResourceType.DYNAMODB_TABLE)
-@DependsOn(name = "Configuration-test", resourceType = ResourceType.DYNAMODB_TABLE)
+@DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 10)
+@DependsOn(name = "Audit", resourceType = ResourceType.DYNAMODB_TABLE)
+@DependsOn(name = "Configuration", resourceType = ResourceType.DYNAMODB_TABLE)
 public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	private final AmazonDynamoDB dynamoDb;
 
