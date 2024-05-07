@@ -87,7 +87,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 		item.put("modificationTime", new AttributeValue().withS(newRecord.getModificationTime()));
 		item.put("newValue", new AttributeValue().withM(new HashMap<String, AttributeValue>() {{
 			put("key", new AttributeValue().withS(newRecord.getNewValue().getKey()));
-			put("value", new AttributeValue().withS(newRecord.getNewValue().getValue()));
+			put("value", new AttributeValue().withN(newRecord.getNewValue().getValue()));
 		}}));
 		dynamoDb.putItem("cmtr-24c2b942-Audit-test", item);
 	}
@@ -98,8 +98,8 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 		item.put("itemKey", new AttributeValue().withS(updateRecord.getItemKey()));
 		item.put("modificationTime", new AttributeValue().withS(updateRecord.getModificationTime()));
 		item.put("updatedAttribute", new AttributeValue().withS(updateRecord.getUpdatedAttribute()));
-		item.put("oldValue", new AttributeValue().withS(updateRecord.getOldValue()));
-		item.put("newValue", new AttributeValue().withS(updateRecord.getNewValue()));
+		item.put("oldValue", new AttributeValue().withN(updateRecord.getOldValue()));
+		item.put("newValue", new AttributeValue().withN(updateRecord.getNewValue()));
 		dynamoDb.putItem("cmtr-24c2b942-Audit-test", item);
 	}
 }
