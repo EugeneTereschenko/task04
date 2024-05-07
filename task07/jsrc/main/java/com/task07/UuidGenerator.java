@@ -30,7 +30,7 @@ public class UuidGenerator implements RequestHandler<Object, Void> {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final S3Client client = getS3Client();
-	private final String bucketName = "cmtr-24c2b942-uuid-storage";
+	private final String bucketName = "cmtr-24c2b942-uuid-storage-test";
 	private LambdaLogger logger;
 
 	public Void handleRequest(Object request, Context context) {
