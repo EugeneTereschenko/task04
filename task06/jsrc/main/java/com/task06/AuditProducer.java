@@ -47,7 +47,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 			Map<String, AttributeValue> image = record.getDynamodb().getNewImage();
 
 			String itemKey = image.get("key").getS();
-			String itemValue = image.get("value").getS();
+			String itemValue = image.get("value").getN();
 			logger.log("key " + itemKey);
 			logger.log("image " + image);
 
@@ -55,7 +55,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 
 			Configuration configuration = new Configuration(
 					itemKey,
-					image.get("value").getS()
+					image.get("value").getN()
 			);
 
 			if (record.getEventName().equals("INSERT")) {
@@ -71,8 +71,8 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 				UpdateRecord updateRecord = new UpdateRecord(
 						configuration.getKey(),
 						"value",
-						record.getDynamodb().getOldImage().get("value").getS(),
-						record.getDynamodb().getNewImage().get("value").getS()
+						record.getDynamodb().getOldImage().get("value").getN(),
+						record.getDynamodb().getNewImage().get("value").getN()
 				);
 				publishAudit(updateRecord);
 			}
