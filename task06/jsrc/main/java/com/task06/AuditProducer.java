@@ -26,9 +26,9 @@ import java.util.Map;
 		lambdaName = "audit_producer",
 		roleName = "audit_producer-role"
 )
-@DynamoDbTriggerEventSource(targetTable = "Configuration-test", batchSize = 10)
-@DependsOn(name = "Audit-test", resourceType = ResourceType.DYNAMODB_TABLE)
-@DependsOn(name = "Configuration-test", resourceType = ResourceType.DYNAMODB_TABLE)
+@DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 10)
+@DependsOn(name = "Audit", resourceType = ResourceType.DYNAMODB_TABLE)
+@DependsOn(name = "Configuration", resourceType = ResourceType.DYNAMODB_TABLE)
 public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 
 	private final AmazonDynamoDB dynamoDb;
@@ -40,11 +40,22 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	}
 
 	public Void handleRequest(DynamodbEvent dynamodbEvent, Context context) {
+		LambdaLogger logger = context.getLogger();
 		System.out.println("Entry of handleRequest method");
 		for (DynamodbEvent.DynamodbStreamRecord record : dynamodbEvent.getRecords()) {
+
+			Map<String, AttributeValue> image = record.getDynamodb().getNewImage();
+
+			String itemKey = image.get("key").getS();
+			String itemValue = image.get("value").getS();
+			logger.log("key " + itemKey);
+			logger.log("image " + image);
+
+			logger.log("value " + itemValue);
+
 			Configuration configuration = new Configuration(
-					record.getDynamodb().getNewImage().get("key").getS(),
-					record.getDynamodb().getNewImage().get("value").getS()
+					itemKey,
+					image.get("value").getS()
 			);
 
 			if (record.getEventName().equals("INSERT")) {
