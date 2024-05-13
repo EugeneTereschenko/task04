@@ -62,7 +62,7 @@ public class Processor implements RequestHandler<APIGatewayProxyRequestEvent, AP
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 		try {
-			String weatherData = getWeatherForecast(50.4375, 30.5);
+			String weatherData = getWeatherForecast(46.2375, 32.2);
 
 			logger.info(weatherData + "weather Data");
 			JsonNode jsonNode = objectMapper.readTree(weatherData);
