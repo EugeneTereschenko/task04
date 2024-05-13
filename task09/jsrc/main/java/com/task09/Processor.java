@@ -68,6 +68,7 @@ public class Processor implements RequestHandler<APIGatewayProxyRequestEvent, AP
 			JsonNode jsonNode = objectMapper.readTree(weatherData);
 			String id = UUID.randomUUID().toString();
 
+
 			Map<String, AttributeValue> forecastData = new HashMap<>();
 			forecastData.put("latitude", new AttributeValue().withN(String.valueOf(jsonNode.get("latitude").asDouble())));
 			forecastData.put("longitude", new AttributeValue().withN(String.valueOf(jsonNode.get("longitude").asDouble())));
@@ -76,6 +77,7 @@ public class Processor implements RequestHandler<APIGatewayProxyRequestEvent, AP
 			forecastData.put("timezone", new AttributeValue().withS(jsonNode.get("timezone").asText()));
 			forecastData.put("timezone_abbreviation", new AttributeValue().withS(jsonNode.get("timezone_abbreviation").asText()));
 			forecastData.put("elevation", new AttributeValue().withN(String.valueOf(jsonNode.get("elevation").asDouble())));
+
 
 			JsonNode hourlyNode = jsonNode.path("hourly");
 			Map<String, AttributeValue> hourlyData = new HashMap<>();
