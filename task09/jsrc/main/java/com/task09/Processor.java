@@ -21,6 +21,7 @@ import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.model.ArtifactExtension;
 import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.ResourceType;
+import com.syndicate.deployment.model.TracingMode;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.lambda.url.InvokeMode;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import static com.amazonaws.xray.contexts.SegmentContext.logger;
 
 @LambdaHandler(lambdaName = "processor",
 		roleName = "processor-role",
+		tracingMode = TracingMode.Active,
 		layers = { "sdk-layer" }
 )
 @LambdaLayer(
