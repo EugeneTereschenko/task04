@@ -30,111 +30,104 @@ import java.net.URL;
 import java.util.*;
 
 
-
-import static com.amazonaws.xray.contexts.SegmentContext.logger;
-
-
 @LambdaHandler(lambdaName = "processor",
-		roleName = "processor-role",
-		tracingMode = TracingMode.Active,
-		layers = { "sdk-layer" }
+        roleName = "processor-role",
+        tracingMode = TracingMode.Active,
+        layers = {"sdk-layer"}
 )
 @LambdaLayer(
-		layerName = "sdk-layer",
-		libraries = { "lib/jackson-databind-2.12.1.jar", "lib/jackson-annotations-2.12.1.jar", "lib/jackson-core-2.12.1.jar" },
-		runtime = DeploymentRuntime.JAVA11,
-		artifactExtension = ArtifactExtension.ZIP
+        layerName = "sdk-layer",
+        libraries = {"lib/jackson-databind-2.12.1.jar", "lib/jackson-annotations-2.12.1.jar", "lib/jackson-core-2.12.1.jar"},
+        runtime = DeploymentRuntime.JAVA11,
+        artifactExtension = ArtifactExtension.ZIP
 )
 @LambdaUrlConfig(
-		authType = AuthType.NONE,
-		invokeMode = InvokeMode.BUFFERED
+        authType = AuthType.NONE,
+        invokeMode = InvokeMode.BUFFERED
 )
 @DynamoDbTriggerEventSource(targetTable = "Weather", batchSize = 1)
 @DependsOn(name = "Weather", resourceType = ResourceType.DYNAMODB_TABLE)
 public class Processor implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-	private final AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard()
-			.withRequestHandlers(new TracingHandler(AWSXRay.getGlobalRecorder()))
-			.build();
-	private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard()
+            .withRequestHandlers(new TracingHandler(AWSXRay.getGlobalRecorder()))
+            .build();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-	@Override
-	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
-		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-		try {
-			String weatherData = getWeatherForecast(46.2375, 32.2);
+    @Override
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+        try {
+            String weatherData = getWeatherForecast(46.2375, 32.2);
 
-			logger.info(weatherData + "weather Data");
-			JsonNode jsonNode = objectMapper.readTree(weatherData);
-			String id = UUID.randomUUID().toString();
-
-
-			Map<String, AttributeValue> forecastData = new HashMap<>();
-			forecastData.put("latitude", new AttributeValue().withN(String.valueOf(jsonNode.get("latitude").asDouble())));
-			forecastData.put("longitude", new AttributeValue().withN(String.valueOf(jsonNode.get("longitude").asDouble())));
-			forecastData.put("generationtime_ms", new AttributeValue().withN(String.valueOf(jsonNode.get("generationtime_ms").asDouble())));
-			forecastData.put("utc_offset_seconds", new AttributeValue().withN(String.valueOf(jsonNode.get("utc_offset_seconds").asInt())));
-			forecastData.put("timezone", new AttributeValue().withS(jsonNode.get("timezone").asText()));
-			forecastData.put("timezone_abbreviation", new AttributeValue().withS(jsonNode.get("timezone_abbreviation").asText()));
-			forecastData.put("elevation", new AttributeValue().withN(String.valueOf(jsonNode.get("elevation").asDouble())));
+            JsonNode jsonNode = objectMapper.readTree(weatherData);
+            String id = UUID.randomUUID().toString();
 
 
-			JsonNode hourlyNode = jsonNode.path("hourly");
-			Map<String, AttributeValue> hourlyData = new HashMap<>();
+            Map<String, AttributeValue> forecastData = new HashMap<>();
+            forecastData.put("latitude", new AttributeValue().withN(String.valueOf(jsonNode.get("latitude").asDouble())));
+            forecastData.put("longitude", new AttributeValue().withN(String.valueOf(jsonNode.get("longitude").asDouble())));
+            forecastData.put("generationtime_ms", new AttributeValue().withN(String.valueOf(jsonNode.get("generationtime_ms").asDouble())));
+            forecastData.put("utc_offset_seconds", new AttributeValue().withN(String.valueOf(jsonNode.get("utc_offset_seconds").asInt())));
+            forecastData.put("timezone", new AttributeValue().withS(jsonNode.get("timezone").asText()));
+            forecastData.put("timezone_abbreviation", new AttributeValue().withS(jsonNode.get("timezone_abbreviation").asText()));
+            forecastData.put("elevation", new AttributeValue().withN(String.valueOf(jsonNode.get("elevation").asDouble())));
 
-			List<AttributeValue> temperatureList = new ArrayList<>();
-			hourlyNode.path("temperature_2m").forEach(temp ->
-					temperatureList.add(new AttributeValue().withN(temp.asText()))
-			);
-			hourlyData.put("temperature_2m", new AttributeValue().withL(temperatureList));
 
-			List<AttributeValue> timeList = new ArrayList<>();
-			hourlyNode.path("time").forEach(time ->
-					timeList.add(new AttributeValue().withS(time.asText()))
-			);
-			hourlyData.put("time", new AttributeValue().withL(timeList));
+            JsonNode hourlyNode = jsonNode.path("hourly");
+            Map<String, AttributeValue> hourlyData = new HashMap<>();
 
-			forecastData.put("hourly", new AttributeValue().withM(hourlyData));
+            List<AttributeValue> temperatureList = new ArrayList<>();
+            hourlyNode.path("temperature_2m").forEach(temp ->
+                    temperatureList.add(new AttributeValue().withN(temp.asText()))
+            );
+            hourlyData.put("temperature_2m", new AttributeValue().withL(temperatureList));
 
-			JsonNode hourlyUnitsNode = jsonNode.path("hourly_units");
-			Map<String, AttributeValue> hourlyUnitsData = new HashMap<>();
-			hourlyUnitsData.put("temperature_2m", new AttributeValue().withS(hourlyUnitsNode.path("temperature_2m").asText()));
-			hourlyUnitsData.put("time", new AttributeValue().withS(hourlyUnitsNode.path("time").asText()));
-			forecastData.put("hourly_units", new AttributeValue().withM(hourlyUnitsData));
+            List<AttributeValue> timeList = new ArrayList<>();
+            hourlyNode.path("time").forEach(time ->
+                    timeList.add(new AttributeValue().withS(time.asText()))
+            );
+            hourlyData.put("time", new AttributeValue().withL(timeList));
 
-			Map<String, AttributeValue> item = new HashMap<>();
-			item.put("id", new AttributeValue().withS(id));
-			item.put("forecast", new AttributeValue().withM(forecastData));
+            forecastData.put("hourly", new AttributeValue().withM(hourlyData));
 
-			dynamoDB.putItem(new PutItemRequest().withTableName("cmtr-24c2b942-Weather-test").withItem(item));
+            JsonNode hourlyUnitsNode = jsonNode.path("hourly_units");
+            Map<String, AttributeValue> hourlyUnitsData = new HashMap<>();
+            hourlyUnitsData.put("temperature_2m", new AttributeValue().withS(hourlyUnitsNode.path("temperature_2m").asText()));
+            hourlyUnitsData.put("time", new AttributeValue().withS(hourlyUnitsNode.path("time").asText()));
+            forecastData.put("hourly_units", new AttributeValue().withM(hourlyUnitsData));
 
-			return response
-					.withStatusCode(200)
-					.withBody("Weather data stored successfully with ID: " + id);
-		}
-		catch (IOException e) {
-			return response
-					.withStatusCode(500)
-					.withBody("Error: " + e.getMessage());
-		}
-	}
+            Map<String, AttributeValue> item = new HashMap<>();
+            item.put("id", new AttributeValue().withS(id));
+            item.put("forecast", new AttributeValue().withM(forecastData));
 
-	private String getWeatherForecast(double latitude, double longitude) throws IOException {
-		String baseUrl = "https://api.open-meteo.com/v1/forecast";
-		URL url = new URL(baseUrl + "?latitude=" + latitude + "&longitude=" + longitude + "&hourly=temperature_2m");
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.connect();
+            dynamoDB.putItem(new PutItemRequest().withTableName("cmtr-24c2b942-Weather-test").withItem(item));
 
-		int responseCode = conn.getResponseCode();
-		if (responseCode != 200) {
-			throw new RuntimeException("HttpResponseCode: " + responseCode);
-		}
-		else {
-			Scanner scanner = new Scanner(url.openStream());
-			String response = scanner.useDelimiter("\\A").next();
-			scanner.close();
-			return response;
-		}
-	}
+            return response
+                    .withStatusCode(200)
+                    .withBody("Weather data stored successfully with ID: " + id);
+        } catch (IOException e) {
+            return response
+                    .withStatusCode(500)
+                    .withBody("Error: " + e.getMessage());
+        }
+    }
+
+    private String getWeatherForecast(double latitude, double longitude) throws IOException {
+        String baseUrl = "https://api.open-meteo.com/v1/forecast";
+        URL url = new URL(baseUrl + "?latitude=" + latitude + "&longitude=" + longitude + "&hourly=temperature_2m");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.connect();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new RuntimeException("HttpResponseCode: " + responseCode);
+        } else {
+            Scanner scanner = new Scanner(url.openStream());
+            String response = scanner.useDelimiter("\\A").next();
+            scanner.close();
+            return response;
+        }
+    }
 }
