@@ -27,6 +27,11 @@
             <version>1.2.0</version>
         </dependency>
         <dependency>
+            <groupId>net.sf.aws-syndicate</groupId>
+            <artifactId>deployment-configuration-annotations</artifactId>
+            <version>${syndicate.java.plugin.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
             <version>2.2.5</version>
@@ -67,17 +72,7 @@
             <artifactId>aws-xray-recorder-sdk-aws-sdk</artifactId>
             <version>2.15.0</version>
         </dependency>
-        <!--Syndicate annotations-->
-        <dependency>
-            <groupId>net.sf.aws-syndicate</groupId>
-            <artifactId>deployment-configuration-annotations</artifactId>
-            <version>${deployment-configuration-annotations.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-xray</artifactId>
-            <version>1.12.153</version>
-        </dependency>
+
     </dependencies>
 
     <build>
