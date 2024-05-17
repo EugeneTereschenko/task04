@@ -28,7 +28,7 @@ public class SignInImpl {
         try {
             bodyJson = (JSONObject) parser.parse(apiGatewayProxyRequestEvent.getBody());
         } catch (org.json.simple.parser.ParseException e) {
-            throw new RuntimeException(e);
+            return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("Sign-in failed");
         }
 
 

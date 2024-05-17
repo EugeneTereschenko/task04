@@ -24,7 +24,7 @@ public class SignUpImpl {
         try {
             bodyJson = (JSONObject) parser.parse(apiGatewayProxyRequestEvent.getBody());
         } catch (org.json.simple.parser.ParseException e) {
-            throw new RuntimeException(e);
+            return errorResponse("User registration failed " + e);
         }
         String firstName = (String) bodyJson.get("firstName");
         String lastName = (String) bodyJson.get("lastName");

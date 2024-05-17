@@ -75,7 +75,7 @@ public class TablesImpl {
         DynamoDBMapper dbMapper = new DynamoDBMapper(getAmazonDynamoDB());
         try {
             dbMapper.save(savedTable);
-            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"id\":\"" + new TableDTO(table.getId(), 0, 0, false, 0) + "\"}");
+            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"id\":\""+ table.getId() + "\"}");
         } catch (Exception e) {
             System.out.println(e);
             return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"id\":\"" +  new TableDTO(0, 0, 0, false, 0) + "\"}");
