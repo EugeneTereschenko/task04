@@ -23,7 +23,7 @@ import java.util.UUID;
 public class ReservationImpl {
 
     private Regions REGION = Regions.EU_CENTRAL_1;
-    private final String RESERVATION_DB_TABLE_NAME = "cmtr-24c2b942-Reservations";
+    private final String RESERVATION_DB_TABLE_NAME = "cmtr-24c2b942-Reservations-test";
 
     private AmazonDynamoDB amazonDynamoDB;
     private TablesImpl tablesImpl = new TablesImpl();

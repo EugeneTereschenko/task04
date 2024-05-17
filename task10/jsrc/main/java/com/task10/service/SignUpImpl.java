@@ -68,7 +68,7 @@ public class SignUpImpl {
     }
 
     private String getPoolId() {
-        String userPoolName = "cmtr-24c2b942-simple-booking-userpool";
+        String userPoolName = "cmtr-24c2b942-simple-booking-userpool-test";
         ListUserPoolsRequest listUserPoolsRequest = ListUserPoolsRequest.builder()
                 .maxResults(10)
                 .build();

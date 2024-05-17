@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
-@DynamoDBTable(tableName = "cmtr-24c2b942-Tables")
+@DynamoDBTable(tableName = "cmtr-24c2b942-Tables-test")
 public class Table {
     private Integer id;
     private Integer number;

@@ -27,7 +27,7 @@ import java.util.Map;
 public class TablesImpl {
 
     private Regions REGION = Regions.EU_CENTRAL_1;
-    private final String TABLES_DB_TABLE_NAME = "cmtr-24c2b942-Tables";
+    private final String TABLES_DB_TABLE_NAME = "cmtr-24c2b942-Tables-test";
     private static final Logger log = LoggerFactory.getLogger(SignInImpl.class);
 
     private AmazonDynamoDB amazonDynamoDB;
