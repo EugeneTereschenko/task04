@@ -61,9 +61,7 @@ public class TablesImpl {
         log.info( "Tables " + tablesDTO);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(tablesDTO);
-        return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"tables\":" + json + "}");
-
-
+        return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(json);
     }
 
     public APIGatewayProxyResponseEvent saveTable(String requestBody) throws IOException {

@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.task10.DTO.ReservationDTO;
@@ -42,6 +43,7 @@ public class ReservationImpl {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Reservation reservation = objectMapper.readValue(requestBody, Reservation.class);
 
+
         TablesDTO tablesDTO = tablesImpl.getAllTables();
         TableDTO tableDTO = tablesDTO.getTables().stream()
                 .filter(t -> t.getNumber() == reservation.getTableNumber())
@@ -65,7 +67,7 @@ public class ReservationImpl {
         DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(getAmazonDynamoDB());
         dynamoDBMapper.save(reservation);
 
-        return new ReservationDTO(reservation.getId(), 0, "" ,"", "" ,"", "");
+        return new ReservationDTO(reservation.getId(), 0, "", "", "", "", "");
     }
 
     private boolean hasOverlap(Reservation newReservation, Reservation existingReservation) {
