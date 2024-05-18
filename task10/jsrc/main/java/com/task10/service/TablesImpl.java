@@ -14,11 +14,10 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.task10.DTO.TableDTO;
 import com.task10.DTO.TablesDTO;
 import com.task10.model.Table;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static com.task10.service.SignUpImpl.errorResponse;
 
 public class TablesImpl {
 
@@ -61,7 +59,10 @@ public class TablesImpl {
             tablesDTO.getTables().add(tableDTO);
         }
         log.info( "Tables " + tablesDTO);
-        return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"Tables\":\"" + tablesDTO + "\"}");
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(tablesDTO);
+        return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"tables\":" + json + "}");
+
 
     }
 

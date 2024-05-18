@@ -15,6 +15,8 @@ import com.task10.service.SignUpImpl;
 import com.task10.service.TablesImpl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @LambdaHandler(lambdaName = "api_handler",
@@ -69,14 +71,15 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
                 throw new RuntimeException(e);
             }
         } else if (path.equals("/reservations") && httpMethod.equals("POST")) {
-            try {
+			try {
 				Gson gson = new Gson();
 				ReservationDTO reservationDTO = reservationImpl.saveReservation(apiGatewayProxyRequestEvent.getBody());
-				String str = "reservationId:" + reservationDTO.getId();
-                return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(gson.toJson(str));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+				Map<String, String> responseMap = new HashMap<>();
+				responseMap.put("reservationId", reservationDTO.getId());
+				return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(gson.toJson(responseMap));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
         } else if (path.equals("/reservations") && httpMethod.equals("GET")) {
 			ReservationsDTO reservationsDTO = reservationImpl.getReservations();
 			Gson gson = new Gson();
