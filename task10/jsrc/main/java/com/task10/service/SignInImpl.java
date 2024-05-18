@@ -44,11 +44,15 @@ public class SignInImpl {
                 .userPoolId(getPoolId())
                 .authParameters(authParameters)
                 .build();
-        AdminInitiateAuthResponse authResponse = cognitoClient.adminInitiateAuth(authRequest);
-        if (authResponse.sdkHttpResponse().statusCode() == 200) {
-            String accessToken = authResponse.authenticationResult().idToken();
-            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"accessToken\":\"" + accessToken + "\"}");
-        } else {
+        try {
+            AdminInitiateAuthResponse authResponse = cognitoClient.adminInitiateAuth(authRequest);
+            if (authResponse.sdkHttpResponse().statusCode() == 200) {
+                String accessToken = authResponse.authenticationResult().idToken();
+                return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"accessToken\":\"" + accessToken + "\"}");
+            } else {
+                return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("Sign-in failed");
+            }
+        } catch (CognitoIdentityProviderException e) {
             return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("Sign-in failed");
         }
     }

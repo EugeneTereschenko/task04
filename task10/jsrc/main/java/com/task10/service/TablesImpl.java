@@ -17,12 +17,16 @@ import com.google.gson.Gson;
 import com.task10.DTO.TableDTO;
 import com.task10.DTO.TablesDTO;
 import com.task10.model.Table;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
+
+import static com.task10.service.SignUpImpl.errorResponse;
 
 public class TablesImpl {
 
@@ -75,7 +79,7 @@ public class TablesImpl {
         DynamoDBMapper dbMapper = new DynamoDBMapper(getAmazonDynamoDB());
         try {
             dbMapper.save(savedTable);
-            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"id\":\""+ table.getId() + "\"}");
+            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"id\":" + table.getId() + "}");
         } catch (Exception e) {
             System.out.println(e);
             return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"id\":\"" +  new TableDTO(0, 0, 0, false, 0) + "\"}");
