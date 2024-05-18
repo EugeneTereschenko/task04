@@ -4,21 +4,14 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.google.gson.Gson;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
-import com.task10.DTO.ReservationDTO;
-import com.task10.DTO.ReservationsDTO;
-import com.task10.model.Reservation;
 import com.task10.service.ReservationImpl;
 import com.task10.service.SignInImpl;
 import com.task10.service.SignUpImpl;
 import com.task10.service.TablesImpl;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 @LambdaHandler(lambdaName = "api_handler",
@@ -74,19 +67,16 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
             }
         } else if (path.equals("/reservations") && httpMethod.equals("POST")) {
             try {
-                Gson gson = new Gson();
-                ReservationDTO reservationDTO = reservationImpl.saveReservation(apiGatewayProxyRequestEvent.getBody());
-                Map<String, String> responseMap = new HashMap<>();
-                responseMap.put("reservationId", reservationDTO.getId());
-                return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(gson.toJson(responseMap));
+                return reservationImpl.saveReservation(apiGatewayProxyRequestEvent.getBody());
             } catch (IOException e) {
                 return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody(e.toString());
             }
         } else if (path.equals("/reservations") && httpMethod.equals("GET")) {
-            ReservationsDTO reservationsDTO = reservationImpl.getReservations();
-            List<Reservation> reservations = ReservationsDTO.fromReservationDTO(reservationsDTO.getReservationsDTO());
-            Gson gson = new Gson();
-            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(gson.toJson(reservations));
+            try {
+                return reservationImpl.getAllReservations();
+            } catch (Exception e) {
+                return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody(e.toString());
+            }
         } else {
             return new APIGatewayProxyResponseEvent().withStatusCode(404).withBody("Error request");
         }
